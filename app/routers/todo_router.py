@@ -3,18 +3,17 @@ from fastapi.params import Depends
 from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.services.todo_service import TodoService
-from app import schemas
+from app.models.schemas.todo import TodoCreateRequest
+from app.deps import get_todo_service
 
 
 
+router = APIRouter(prefix = "/todos", tags=["todos"])
 
-router = APIRouter(prefix = "todos", tags=["todos"])
 
-def get_todo_service(db: Session = Depends(get_db)) -> TodoService:
-    return TodoService(db)
 
 @router.post("/")
-async def create_todo(payload: schemas.TodoCreate, service: TodoService = Depends(get_todo_service)):
+async def create_todo(payload: TodoCreateRequest, service: TodoService = Depends(get_todo_service)):
     return service.create_todo(payload)
 
 @router.get("/")
